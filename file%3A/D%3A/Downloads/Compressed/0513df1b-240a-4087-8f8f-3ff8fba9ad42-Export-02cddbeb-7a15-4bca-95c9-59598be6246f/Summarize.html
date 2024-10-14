@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head lang="en">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Summarize</title>
+    <style>
+      /* cspell:disable-file */
+      /* webkit printing magic: print all background colors */
+      html {
+        -webkit-print-color-adjust: exact;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-print-color-adjust: exact;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      article {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        max-width: 80%;
+      }
+
+      @media only screen {
+        body {
+          margin: 2em auto;
+          max-width: 900px;
+          color: rgb(55, 53, 47);
+        }
+      }
+
+      body {
+        line-height: 1.5;
+        white-space: pre-wrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      a,
+      a.visited {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      .pdf-relative-link-path {
+        font-size: 80%;
+        color: #444;
+      }
+
+      h1,
+      h2,
+      h3 {
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        font-weight: 600;
+        margin-bottom: 0;
+      }
+
+      .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 0.75em;
+      }
+
+      h1 {
+        font-size: 1.875rem;
+        margin-top: 1.875rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        margin-top: 1.25rem;
+      }
+
+      .source {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 1.5em;
+        word-break: break-all;
+      }
+
+      .callout {
+        border-radius: 3px;
+        padding: 1rem;
+      }
+
+      figure {
+        margin: 1.25em 0;
+        page-break-inside: avoid;
+      }
+
+      figcaption {
+        opacity: 0.5;
+        font-size: 85%;
+        margin-top: 0.5em;
+      }
+
+      mark {
+        background-color: transparent;
+      }
+
+      .indented {
+        padding-left: 1.5em;
+      }
+
+      hr {
+        background: transparent;
+        display: block;
+        width: 100%;
+        height: 1px;
+        visibility: visible;
+        border: none;
+        border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      @media only print {
+        img {
+          max-height: 100vh;
+          object-fit: contain;
+        }
+      }
+
+      @page {
+        margin: 1in;
+      }
+
+      .collection-content {
+        font-size: 0.875rem;
+      }
+
+      .column-list {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .column {
+        padding: 0 1em;
+      }
+
+      .column:first-child {
+        padding-left: 0;
+      }
+
+      .column:last-child {
+        padding-right: 0;
+      }
+
+      .table_of_contents-item {
+        display: block;
+        font-size: 0.875rem;
+        line-height: 1.3;
+        padding: 0.125rem;
+      }
+
+      .table_of_contents-indent-1 {
+        margin-left: 1.5rem;
+      }
+
+      .table_of_contents-indent-2 {
+        margin-left: 3rem;
+      }
+
+      .table_of_contents-indent-3 {
+        margin-left: 4.5rem;
+      }
+
+      .table_of_contents-link {
+        text-decoration: none;
+        opacity: 0.7;
+        border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid rgba(55, 53, 47, 0.09);
+        border-collapse: collapse;
+      }
+
+      table {
+        border-left: none;
+        border-right: none;
+      }
+
+      th,
+      td {
+        font-weight: normal;
+        padding: 0.25em 0.5em;
+        line-height: 1.5;
+        min-height: 1.5em;
+        text-align: left;
+      }
+
+      th {
+        color: rgba(55, 53, 47, 0.6);
+      }
+
+      ol,
+      ul {
+        margin: 0;
+        margin-block-start: 0.6em;
+        margin-block-end: 0.6em;
+      }
+
+      li > ol:first-child,
+      li > ul:first-child {
+        margin-block-start: 0.6em;
+      }
+
+      ul > li {
+        list-style: disc;
+      }
+
+      ul.to-do-list {
+        padding-inline-start: 0;
+      }
+
+      ul.to-do-list > li {
+        list-style: none;
+      }
+
+      .to-do-children-checked {
+        text-decoration: line-through;
+        opacity: 0.375;
+      }
+
+      ul.toggle > li {
+        list-style: none;
+      }
+
+      ul {
+        padding-inline-start: 1.7em;
+      }
+
+      ul > li {
+        padding-left: 0.1em;
+      }
+
+      ol {
+        padding-inline-start: 1.6em;
+      }
+
+      ol > li {
+        padding-left: 0.2em;
+      }
+
+      .mono ol {
+        padding-inline-start: 2em;
+      }
+
+      .mono ol > li {
+        text-indent: -0.4em;
+      }
+
+      .toggle {
+        padding-inline-start: 0em;
+        list-style-type: none;
+      }
+
+      /* Indent toggle children */
+      .toggle > li > details {
+        padding-left: 1.7em;
+      }
+
+      .toggle > li > details > summary {
+        margin-left: -1.1em;
+      }
+
+      .selected-value {
+        display: inline-block;
+        padding: 0 0.5em;
+        background: rgba(206, 205, 202, 0.5);
+        border-radius: 3px;
+        margin-right: 0.5em;
+        margin-top: 0.3em;
+        margin-bottom: 0.3em;
+        white-space: nowrap;
+      }
+
+      .collection-title {
+        display: inline-block;
+        margin-right: 1em;
+      }
+
+      .page-description {
+        margin-bottom: 2em;
+      }
+
+      .simple-table {
+        margin-top: 1em;
+        font-size: 0.875rem;
+        empty-cells: show;
+      }
+      .simple-table td {
+        height: 29px;
+        min-width: 120px;
+      }
+
+      .simple-table th {
+        height: 29px;
+        min-width: 120px;
+      }
+
+      .simple-table-header-color {
+        background: rgb(247, 246, 243);
+        color: black;
+      }
+      .simple-table-header {
+        font-weight: 500;
+      }
+
+      time {
+        opacity: 0.5;
+      }
+
+      .icon {
+        display: inline-block;
+        max-width: 1.2em;
+        max-height: 1.2em;
+        text-decoration: none;
+        vertical-align: text-bottom;
+        margin-right: 0.5em;
+      }
+
+      img.icon {
+        border-radius: 3px;
+      }
+
+      .user-icon {
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: 100%;
+        margin-right: 0.5rem;
+      }
+
+      .user-icon-inner {
+        font-size: 0.8em;
+      }
+
+      .text-icon {
+        border: 1px solid #000;
+        text-align: center;
+      }
+
+      .page-cover-image {
+        display: block;
+        object-fit: cover;
+        width: 100%;
+        max-height: 30vh;
+      }
+
+      .page-header-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .page-header-icon-with-cover {
+        margin-top: -0.72em;
+        margin-left: 0.07em;
+      }
+
+      .page-header-icon img {
+        border-radius: 3px;
+      }
+
+      .link-to-page {
+        margin: 1em 0;
+        padding: 0;
+        border: none;
+        font-weight: 500;
+      }
+
+      p > .user {
+        opacity: 0.5;
+      }
+
+      td > .user,
+      td > time {
+        white-space: nowrap;
+      }
+
+      input[type="checkbox"] {
+        transform: scale(1.5);
+        margin-right: 0.6em;
+        vertical-align: middle;
+      }
+
+      p {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .image {
+        border: none;
+        margin: 1.5em 0;
+        padding: 0;
+        border-radius: 0;
+        text-align: center;
+      }
+
+      .code,
+      code {
+        background: rgba(135, 131, 120, 0.15);
+        border-radius: 3px;
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+        font-size: 85%;
+        tab-size: 2;
+      }
+
+      code {
+        color: #eb5757;
+      }
+
+      .code {
+        padding: 1.5em 1em;
+      }
+
+      .code-wrap {
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      .code > code {
+        background: none;
+        padding: 0;
+        font-size: 100%;
+        color: inherit;
+      }
+
+      blockquote {
+        font-size: 1.25em;
+        margin: 1em 0;
+        padding-left: 1em;
+        border-left: 3px solid rgb(55, 53, 47);
+      }
+
+      .bookmark {
+        text-decoration: none;
+        max-height: 8em;
+        padding: 0;
+        display: flex;
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .bookmark-title {
+        font-size: 0.85em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 1.75em;
+        white-space: nowrap;
+      }
+
+      .bookmark-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .bookmark-info {
+        flex: 4 1 180px;
+        padding: 12px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .bookmark-image {
+        width: 33%;
+        flex: 1 1 180px;
+        display: block;
+        position: relative;
+        object-fit: cover;
+        border-radius: 1px;
+      }
+
+      .bookmark-description {
+        color: rgba(55, 53, 47, 0.6);
+        font-size: 0.75em;
+        overflow: hidden;
+        max-height: 4.5em;
+        word-break: break-word;
+      }
+
+      .bookmark-href {
+        font-size: 0.75em;
+        margin-top: 0.25em;
+      }
+
+      .sans {
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont,
+          "Segoe UI Variable Display", "Segoe UI", Helvetica,
+          "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+          "Segoe UI Symbol";
+      }
+      .code {
+        font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono",
+          "Liberation Mono", Courier, monospace;
+      }
+      .serif {
+        font-family: Lyon-Text, Georgia, ui-serif, serif;
+      }
+      .mono {
+        font-family: iawriter-mono, Nitti, Menlo, Courier, monospace;
+      }
+      .pdf .sans {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+          "Segoe UI Variable Display", "Segoe UI", Helvetica,
+          "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+          "Segoe UI Symbol", "Twemoji", "Noto Color Emoji", "Noto Sans CJK JP";
+      }
+      .pdf:lang(zh-CN) .sans {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+          "Segoe UI Variable Display", "Segoe UI", Helvetica,
+          "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+          "Segoe UI Symbol", "Twemoji", "Noto Color Emoji", "Noto Sans CJK SC";
+      }
+      .pdf:lang(zh-TW) .sans {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+          "Segoe UI Variable Display", "Segoe UI", Helvetica,
+          "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+          "Segoe UI Symbol", "Twemoji", "Noto Color Emoji", "Noto Sans CJK TC";
+      }
+      .pdf:lang(ko-KR) .sans {
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+          "Segoe UI Variable Display", "Segoe UI", Helvetica,
+          "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+          "Segoe UI Symbol", "Twemoji", "Noto Color Emoji", "Noto Sans CJK KR";
+      }
+      .pdf .code {
+        font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas,
+          "PT Mono", "Liberation Mono", Courier, monospace, "Twemoji",
+          "Noto Color Emoji", "Noto Sans Mono CJK JP";
+      }
+      .pdf:lang(zh-CN) .code {
+        font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas,
+          "PT Mono", "Liberation Mono", Courier, monospace, "Twemoji",
+          "Noto Color Emoji", "Noto Sans Mono CJK SC";
+      }
+      .pdf:lang(zh-TW) .code {
+        font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas,
+          "PT Mono", "Liberation Mono", Courier, monospace, "Twemoji",
+          "Noto Color Emoji", "Noto Sans Mono CJK TC";
+      }
+      .pdf:lang(ko-KR) .code {
+        font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas,
+          "PT Mono", "Liberation Mono", Courier, monospace, "Twemoji",
+          "Noto Color Emoji", "Noto Sans Mono CJK KR";
+      }
+      .pdf .serif {
+        font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, "Twemoji",
+          "Noto Color Emoji", "Noto Serif CJK JP";
+      }
+      .pdf:lang(zh-CN) .serif {
+        font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, "Twemoji",
+          "Noto Color Emoji", "Noto Serif CJK SC";
+      }
+      .pdf:lang(zh-TW) .serif {
+        font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, "Twemoji",
+          "Noto Color Emoji", "Noto Serif CJK TC";
+      }
+      .pdf:lang(ko-KR) .serif {
+        font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, "Twemoji",
+          "Noto Color Emoji", "Noto Serif CJK KR";
+      }
+      .pdf .mono {
+        font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace,
+          "Twemoji", "Noto Color Emoji", "Noto Sans Mono CJK JP";
+      }
+      .pdf:lang(zh-CN) .mono {
+        font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace,
+          "Twemoji", "Noto Color Emoji", "Noto Sans Mono CJK SC";
+      }
+      .pdf:lang(zh-TW) .mono {
+        font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace,
+          "Twemoji", "Noto Color Emoji", "Noto Sans Mono CJK TC";
+      }
+      .pdf:lang(ko-KR) .mono {
+        font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace,
+          "Twemoji", "Noto Color Emoji", "Noto Sans Mono CJK KR";
+      }
+      .highlight-default {
+        color: rgba(55, 53, 47, 1);
+      }
+      .highlight-gray {
+        color: rgba(120, 119, 116, 1);
+        fill: rgba(120, 119, 116, 1);
+      }
+      .highlight-brown {
+        color: rgba(159, 107, 83, 1);
+        fill: rgba(159, 107, 83, 1);
+      }
+      .highlight-orange {
+        color: rgba(217, 115, 13, 1);
+        fill: rgba(217, 115, 13, 1);
+      }
+      .highlight-yellow {
+        color: rgba(203, 145, 47, 1);
+        fill: rgba(203, 145, 47, 1);
+      }
+      .highlight-teal {
+        color: rgba(68, 131, 97, 1);
+        fill: rgba(68, 131, 97, 1);
+      }
+      .highlight-blue {
+        color: rgba(51, 126, 169, 1);
+        fill: rgba(51, 126, 169, 1);
+      }
+      .highlight-purple {
+        color: rgba(144, 101, 176, 1);
+        fill: rgba(144, 101, 176, 1);
+      }
+      .highlight-pink {
+        color: rgba(193, 76, 138, 1);
+        fill: rgba(193, 76, 138, 1);
+      }
+      .highlight-red {
+        color: rgba(212, 76, 71, 1);
+        fill: rgba(212, 76, 71, 1);
+      }
+      .highlight-default_background {
+        color: rgba(55, 53, 47, 1);
+      }
+      .highlight-gray_background {
+        background: rgba(241, 241, 239, 1);
+      }
+      .highlight-brown_background {
+        background: rgba(244, 238, 238, 1);
+      }
+      .highlight-orange_background {
+        background: rgba(251, 236, 221, 1);
+      }
+      .highlight-yellow_background {
+        background: rgba(251, 243, 219, 1);
+      }
+      .highlight-teal_background {
+        background: rgba(237, 243, 236, 1);
+      }
+      .highlight-blue_background {
+        background: rgba(231, 243, 248, 1);
+      }
+      .highlight-purple_background {
+        background: rgba(244, 240, 247, 0.8);
+      }
+      .highlight-pink_background {
+        background: rgba(249, 238, 243, 0.8);
+      }
+      .highlight-red_background {
+        background: rgba(253, 235, 236, 1);
+      }
+      .block-color-default {
+        color: inherit;
+        fill: inherit;
+      }
+      .block-color-gray {
+        color: rgba(120, 119, 116, 1);
+        fill: rgba(120, 119, 116, 1);
+      }
+      .block-color-brown {
+        color: rgba(159, 107, 83, 1);
+        fill: rgba(159, 107, 83, 1);
+      }
+      .block-color-orange {
+        color: rgba(217, 115, 13, 1);
+        fill: rgba(217, 115, 13, 1);
+      }
+      .block-color-yellow {
+        color: rgba(203, 145, 47, 1);
+        fill: rgba(203, 145, 47, 1);
+      }
+      .block-color-teal {
+        color: rgba(68, 131, 97, 1);
+        fill: rgba(68, 131, 97, 1);
+      }
+      .block-color-blue {
+        color: rgba(51, 126, 169, 1);
+        fill: rgba(51, 126, 169, 1);
+      }
+      .block-color-purple {
+        color: rgba(144, 101, 176, 1);
+        fill: rgba(144, 101, 176, 1);
+      }
+      .block-color-pink {
+        color: rgba(193, 76, 138, 1);
+        fill: rgba(193, 76, 138, 1);
+      }
+      .block-color-red {
+        color: rgba(212, 76, 71, 1);
+        fill: rgba(212, 76, 71, 1);
+      }
+      .block-color-default_background {
+        color: inherit;
+        fill: inherit;
+      }
+      .block-color-gray_background {
+        background: rgba(241, 241, 239, 1);
+      }
+      .block-color-brown_background {
+        background: rgba(244, 238, 238, 1);
+      }
+      .block-color-orange_background {
+        background: rgba(251, 236, 221, 1);
+      }
+      .block-color-yellow_background {
+        background: rgba(251, 243, 219, 1);
+      }
+      .block-color-teal_background {
+        background: rgba(237, 243, 236, 1);
+      }
+      .block-color-blue_background {
+        background: rgba(231, 243, 248, 1);
+      }
+      .block-color-purple_background {
+        background: rgba(244, 240, 247, 0.8);
+      }
+      .block-color-pink_background {
+        background: rgba(249, 238, 243, 0.8);
+      }
+      .block-color-red_background {
+        background: rgba(253, 235, 236, 1);
+      }
+      .select-value-color-uiBlue {
+        background-color: rgba(35, 131, 226, 0.07);
+      }
+      .select-value-color-pink {
+        background-color: rgba(245, 224, 233, 1);
+      }
+      .select-value-color-purple {
+        background-color: rgba(232, 222, 238, 1);
+      }
+      .select-value-color-green {
+        background-color: rgba(219, 237, 219, 1);
+      }
+      .select-value-color-gray {
+        background-color: rgba(227, 226, 224, 1);
+      }
+      .select-value-color-transparentGray {
+        background-color: rgba(227, 226, 224, 0);
+      }
+      .select-value-color-translucentGray {
+        background-color: rgba(0, 0, 0, 0.06);
+      }
+      .select-value-color-orange {
+        background-color: rgba(250, 222, 201, 1);
+      }
+      .select-value-color-brown {
+        background-color: rgba(238, 224, 218, 1);
+      }
+      .select-value-color-red {
+        background-color: rgba(255, 226, 221, 1);
+      }
+      .select-value-color-yellow {
+        background-color: rgba(253, 236, 200, 1);
+      }
+      .select-value-color-blue {
+        background-color: rgba(211, 229, 239, 1);
+      }
+      .select-value-color-pageGlass {
+        background-color: undefined;
+      }
+      .select-value-color-washGlass {
+        background-color: undefined;
+      }
+
+      .checkbox {
+        display: inline-flex;
+        vertical-align: text-bottom;
+        width: 16;
+        height: 16;
+        background-size: 16px;
+        margin-left: 2px;
+        margin-right: 5px;
+      }
+
+      .checkbox-on {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+      }
+
+      .checkbox-off {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+      }
+    </style>
+  </head>
+  <body>
+    <article id="11cd585f-a525-8072-89ed-ef2d6228cbe1" class="page sans">
+      <header>
+        <h1 class="page-title">Summarize</h1>
+        <p class="page-description"></p>
+        <table class="properties">
+          <tbody>
+            <tr class="property-row property-row-multi_select">
+              <th>
+                <span class="icon property-icon"
+                  ><svg
+                    role="graphics-symbol"
+                    viewBox="0 0 16 16"
+                    style="
+                      width: 14px;
+                      height: 14px;
+                      display: block;
+                      fill: rgba(55, 53, 47, 0.45);
+                      flex-shrink: 0;
+                    "
+                    class="typesMultipleSelect"
+                  >
+                    <path
+                      d="M1.91602 4.83789C2.44238 4.83789 2.87305 4.40723 2.87305 3.87402C2.87305 3.34766 2.44238 2.91699 1.91602 2.91699C1.38281 2.91699 0.952148 3.34766 0.952148 3.87402C0.952148 4.40723 1.38281 4.83789 1.91602 4.83789ZM5.1084 4.52344H14.3984C14.7607 4.52344 15.0479 4.23633 15.0479 3.87402C15.0479 3.51172 14.7607 3.22461 14.3984 3.22461H5.1084C4.74609 3.22461 4.45898 3.51172 4.45898 3.87402C4.45898 4.23633 4.74609 4.52344 5.1084 4.52344ZM1.91602 9.03516C2.44238 9.03516 2.87305 8.60449 2.87305 8.07129C2.87305 7.54492 2.44238 7.11426 1.91602 7.11426C1.38281 7.11426 0.952148 7.54492 0.952148 8.07129C0.952148 8.60449 1.38281 9.03516 1.91602 9.03516ZM5.1084 8.7207H14.3984C14.7607 8.7207 15.0479 8.43359 15.0479 8.07129C15.0479 7.70898 14.7607 7.42188 14.3984 7.42188H5.1084C4.74609 7.42188 4.45898 7.70898 4.45898 8.07129C4.45898 8.43359 4.74609 8.7207 5.1084 8.7207ZM1.91602 13.2324C2.44238 13.2324 2.87305 12.8018 2.87305 12.2686C2.87305 11.7422 2.44238 11.3115 1.91602 11.3115C1.38281 11.3115 0.952148 11.7422 0.952148 12.2686C0.952148 12.8018 1.38281 13.2324 1.91602 13.2324ZM5.1084 12.918H14.3984C14.7607 12.918 15.0479 12.6309 15.0479 12.2686C15.0479 11.9062 14.7607 11.6191 14.3984 11.6191H5.1084C4.74609 11.6191 4.45898 11.9062 4.45898 12.2686C4.45898 12.6309 4.74609 12.918 5.1084 12.918Z"
+                    ></path></svg></span
+                >Week
+              </th>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </header>
+      <div class="page-body">
+        <h3 id="11cd585f-a525-803b-a7b9-ccbdf5cef168" class="">
+          <strong>PPT 1: Rekayasa Perangkat Lunak (RPL)</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-809d-b2ed-f2073b1a13f2"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>Definisi Software</strong>
+            <ul id="11cd585f-a525-8084-b9a8-c5f4a64c7e39" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Instruksi (program komputer) yang memberikan fitur, fungsi, dan performa yang diinginkan.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80cd-bee1-e4f2fc1b9d1a" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Struktur data yang memungkinkan program memanipulasi informasi dengan tepat.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80bb-ae96-c285e05a7beb" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Dokumentasi yang menjelaskan operasi dan penggunaan program.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8088-bec0-f57ed4edab5b"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>Permasalahan dalam RPL</strong>
+            <ul id="11cd585f-a525-80da-bf26-d365ab9fd454" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Pentingnya RPL dalam memastikan perangkat lunak dikembangkan dengan cara yang sistematis dan terstruktur.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80bc-8e25-f59b63c373df" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Fase pengembangan, definisi, dan perawatan perangkat lunak.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-801b-b17a-f4355492a556" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Aktivitas payung seperti manajemen proyek, pengujian, dan pemeliharaan.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <hr id="11cd585f-a525-80e8-a2a9-cf240ac2f25c" />
+        <h3 id="11cd585f-a525-80cd-9f90-e44016d58cda" class="">
+          <strong>PPT 2: Metode RPL</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-8019-afb1-d70710d55300"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>Model Proses PL</strong>
+            <ul id="11cd585f-a525-802a-82a5-eda26a8c1702" class="bulleted-list">
+              <li style="list-style-type: disc">
+                SDLC (Siklus Hidup Pengembangan Sistem): Proses yang mengikuti tahapan-tahapan pengembangan dari awal hingga akhir proyek perangkat lunak.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8038-9afd-f6735b476464"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>The Waterfall Model</strong>
+            <ul id="11cd585f-a525-80f7-ae28-d5f34712fe4d" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Proses linear dan berurutan: Setiap tahap harus diselesaikan sebelum tahap berikutnya dimulai. Tahapan meliputi: analisis kebutuhan, desain sistem, implementasi, pengujian, dan pemeliharaan.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8083-9427-d121a205dc41"
+          class="numbered-list"
+          start="3"
+        >
+          <li>
+            <strong>Prototyping Model</strong>
+            <ul id="11cd585f-a525-80a4-9b70-d7c05f73b25f" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Model ini menggunakan prototipe untuk memahami kebutuhan pengguna dan mengembangkan perangkat lunak secara iteratif.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8087-a900-fb3917d8f21a"
+          class="numbered-list"
+          start="4"
+        >
+          <li>
+            <strong>Tahapan Prototyping</strong>
+            <ul id="11cd585f-a525-800c-8650-fcf606984723" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Analisis:</strong
+                > Mengumpulkan dan mendefinisikan kebutuhan pengguna.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80dc-950d-ea8b5311f157" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Desain:</strong> Merancang sistem berdasarkan kebutuhan.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80fc-8f5d-dad4142d62c9" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Konstruksi:</strong> Membuat prototipe sistem.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8057-9e77-c8e418e56c36" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Pengujian:</strong
+                > Menguji prototipe dan mendapatkan umpan balik.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80fb-8b6d-c1af6c50b218" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Perawatan:</strong
+                > Pemeliharaan dan penyempurnaan sistem.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <hr id="11cd585f-a525-8004-8d18-d8cb07bc8a20" />
+        <h3 id="11cd585f-a525-8084-aa27-fff2ef198448" class="">
+          <strong>PPT 3: Metode RPL Lanjutan</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-800e-938b-d9b707d8184f"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>The RAD Model (Rapid Application Development)</strong>
+            <ul id="11cd585f-a525-8018-8efc-de184c25393e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Model ini menggunakan pendekatan pengembangan cepat dengan menggabungkan teknik prototyping dan pengembangan iteratif.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80db-a8d6-e7e96d878cde"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>Incremental Model</strong>
+            <ul id="11cd585f-a525-8082-bc96-e3923a7fcae7" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Pengembangan perangkat lunak secara bertahap dengan menambahkan fitur secara bertahap. Setiap tahap bertujuan untuk meningkatkan fungsi perangkat lunak.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80b5-bd38-de3f7fc214a1"
+          class="numbered-list"
+          start="3"
+        >
+          <li>
+            <strong>Spiral Model</strong>
+            <ul id="11cd585f-a525-801a-a946-f5c85d075208" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Proses iteratif yang melibatkan analisis risiko pada setiap iterasi. Tahapan meliputi: perencanaan, analisis risiko, rekayasa, konstruksi, dan evaluasi pelanggan.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8069-a0be-f286c4b537b5"
+          class="numbered-list"
+          start="4"
+        >
+          <li>
+            <strong>Models Lainnya</strong>
+            <ul id="11cd585f-a525-803c-8fd8-c7dd98d961d4" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Component Assembly Model:</strong
+                > Model pengembangan berbasis komponen.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80c3-8a1c-ddc787a92401" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Concurrent Development Model:</strong
+                > Model pengembangan paralel.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-800d-9ab7-f6594a26db01" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Formal Method Model:</strong
+                > Metode formal yang menekankan spesifikasi matematis.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8045-9c65-de09590a3f3f" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Cleanroom Software Engineering:</strong
+                > Pendekatan rekayasa perangkat lunak yang fokus pada pencegahan kesalahan.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80e1-82db-c5bb4287ad42" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>4th Generation Techniques:</strong
+                > Teknik generasi keempat dalam pengembangan perangkat lunak.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <hr id="11cd585f-a525-80bb-be1b-f7cec50e6418" />
+        <h3 id="11cd585f-a525-8073-9116-fecfaa8aa913" class="">
+          <strong>PPT 4: Konsep Manajemen Proyek</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-803c-a1df-f47057520591"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>People (Orang)</strong>
+            <ul id="11cd585f-a525-800d-b35e-ca4167a332fe" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Stakeholder:</strong
+                > Senior managers, project managers, practitioners, customers, end users.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-803d-bbf1-ca2a15006dd9" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Team Leaders:</strong
+                > Menggunakan model MOI (Motivasi, Organisasi, Inovasi).
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80b2-a458-e5086fa07393" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Tim Perangkat Lunak:</strong
+                > Alternatif pemanfaatan SDM, struktur tim terbaik berdasarkan gaya manajemen, jumlah orang, tingkat keahlian, kompleksitas masalah.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8078-8d04-dc9eb7d71943" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Organisasi Tim:</strong
+                > Democratic Decentralized, Controlled Decentralized, Controlled Centralized.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-803c-8d0f-ea9a959080e4" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Masalah Koordinasi dan Komunikasi:</strong
+                > Scale, uncertainty, interoperability.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8006-ad52-caedd5edc6d4" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Teknik Koordinasi:</strong
+                > Pendekatan impersonal formal, prosedur interpersonal formal dan informal, komunikasi elektronik, jaringan interpersonal.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-803f-b020-f9a2aea79521"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>Problem (Masalah)</strong>
+            <ul id="11cd585f-a525-8094-aec8-d804bb394f76" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Ruang Lingkup Masalah:</strong
+                > Context, information objectives, function and performance.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80a4-897e-fe7843b6f160" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Dekomposisi Masalah:</strong
+                > Pembagian fungsionalitas dan proses.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-808c-9a51-f9861fc7152c"
+          class="numbered-list"
+          start="3"
+        >
+          <li>
+            <strong>Process (Proses)</strong>
+            <ul id="11cd585f-a525-809d-b61f-d91eef71764e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Menggabungkan Masalah dan Proses:</strong
+                > Tahap awal project planning dimulai dengan penggabungan problem dan process. Misal organisasi mengadopsi kerangka aktivitas seperti customer communication, planning, risk analysis, engineering, construction and release, customer evaluation.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80dc-b3b5-c9143ea59769" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Dekomposisi Proses:</strong
+                > Memilih paradigma rekayasa perangkat lunak yang sesuai berdasarkan karakteristik masalah, tim, dan kriteria proyek.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <hr id="11cd585f-a525-8051-ba97-d038351e5a1e" />
+        <h3 id="11cd585f-a525-807a-b189-f6f03bf95f04" class="">
+          <strong>PPT 5: Manajemen Risiko</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-80a7-9522-ee124ce6a798"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>Definisi Risiko</strong>
+            <ul id="11cd585f-a525-80a8-a24b-cf5ce06136d2" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Risiko adalah kemungkinan terjadinya peristiwa yang dapat berdampak negatif pada proyek perangkat lunak. Risiko melibatkan ketidakpastian dan kerugian.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80fb-bd13-f32537066356"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>Strategi Reaktif vs Proaktif</strong>
+            <ul id="11cd585f-a525-809a-a79b-d50dd8f0418e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Reaktif:</strong
+                > Memantau proyek tanpa prioritas sumber daya.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80d0-b326-df4f6f96d1db" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Proaktif:</strong
+                > Mengidentifikasi risiko potensial sebelum pekerjaan teknis dimulai, memperkirakan probabilitas dan pengaruhnya, dan membangun rencana manajemen risiko. Tujuannya adalah menghindari risiko.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80b9-90ec-e32e84999506"
+          class="numbered-list"
+          start="3"
+        >
+          <li>
+            <strong>Klasifikasi Risiko</strong>
+            <ul id="11cd585f-a525-8083-ab40-c79cc177d361" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Risiko Proyek:</strong
+                > Ancaman terhadap rencana proyek seperti biaya, sumber daya, jadwal, pelanggan, personil, dan masalah persyaratan.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80d0-aa50-e796819c6e3f" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Risiko Teknis:</strong
+                > Ancaman terhadap kualitas dan ketepatan waktu perangkat lunak seperti desain potensial, ambiquitas, spesifikasi, interfacing, verifikasi, keusangan teknik.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-807e-8bc4-f061fd110dce" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Risiko Bisnis:</strong
+                > Ancaman terhadap viabilitas perangkat lunak seperti risiko pasar, strategi, pemasaran, manajemen, biaya.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8013-8a61-df1dd8259fcb"
+          class="numbered-list"
+          start="4"
+        >
+          <li>
+            <strong>Identifikasi Risiko</strong>
+            <ul id="11cd585f-a525-8085-ab34-da21dde1093a" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Tujuan dari identifikasi risiko adalah untuk menghindari risiko bilamana mungkin. Metode identifikasi risiko adalah membuat checklist item risiko seperti risiko ukuran produk, risiko yang mempengaruhi bisnis, risiko yang dihubungkan dengan karakteristik pelanggan, definisi proses, teknologi yang akan dibangun, lingkungan pengembangan, ukuran dan pengalaman staf.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8019-b763-ea64120eba36"
+          class="numbered-list"
+          start="5"
+        >
+          <li>
+            <strong>Komponen Risiko dan Driver</strong>
+            <ul id="11cd585f-a525-8022-82e7-c4b7c57fd794" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Komponen risiko meliputi kinerja, biaya, dukungan, jadwal. Risiko kinerja adalah tingkat ketidakpastian produk memenuhi persyaratan dan cocok digunakan. Risiko biaya adalah tingkat ketidakpastian biaya proyek. Risiko dukungan adalah tingkat ketidakpastian perangkat lunak mudah dikoreksi, disesuaikan, dan ditingkatkan. Risiko jadwal adalah tingkat ketidakpastian jadwal proyek.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80bb-a407-f1b0b196fc22"
+          class="numbered-list"
+          start="6"
+        >
+          <li>
+            <strong>Proyeksi Risiko/Perkiraan Risiko</strong>
+            <ul id="11cd585f-a525-802d-8808-e35a2a5b4058" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Membangun skala kemungkinan risiko, menggambar konsekuensi risiko, memperkirakan pengaruh risiko pada proyek dan produk, mencatat akurasi proyeksi risiko untuk menghindari kesalahpahaman.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-802e-8731-f185c24fd1f1"
+          class="numbered-list"
+          start="7"
+        >
+          <li>
+            <strong>Menilai Pengaruh Risiko</strong>
+            <ul id="11cd585f-a525-80ef-b8c8-e16732819a67" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Tiga faktor yang mempengaruhi konsekuensi jika suatu risiko benar-benar terjadi adalah sifatnya, ruang lingkupnya, dan timingnya. Sifatnya menunjukkan masalah yang muncul bila terjadi. Ruang lingkupnya menggabungkan kepelikan masalah dan distribusi keseluruhan. Timingnya mempertimbangkan kapan dan berapa lama pengaruh dirasakan.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <hr id="11cd585f-a525-8006-844d-c12973c13f48" />
+        <h3 id="11cd585f-a525-80bd-b250-dbf80b10f18a" class="">
+          <strong>PPT 6: Analisis Kebutuhan</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-8017-9ac2-f4422aa8f2d9"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>Domain Analysis</strong>
+            <ul id="11cd585f-a525-800e-adba-ca5613096d36" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Mendefinisikan domain yang akan diteliti, mengumpulkan sampel aplikasi dalam domain, menganalisis tiap aplikasi dalam sampel, mengembangkan model analisis untuk objek.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8063-907f-fd241db6e856"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>Scenario-Based Modeling (Ivar Jacobson)</strong>
+            <ul id="11cd585f-a525-8047-9fd4-fd513f2b5761" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Menulis tentang aktor dan fungsi sistem (use-cases), menentukan tingkat detail dan organisasi deskripsi.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-807e-ad71-e1c44dbb6e33"
+          class="numbered-list"
+          start="3"
+        >
+          <li>
+            <strong>Kasus Penggunaan (Use-Cases)</strong>
+            <ul id="11cd585f-a525-804c-8a84-c035944e0f6a" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Skenario penggunaan sistem oleh aktor. Pengembangan use-cases diawali dengan naratif informal dan dapat ditingkatkan ke format terstruktur. Pertanyaan kunci meliputi tugas pokok aktor, informasi yang diperoleh atau diubah oleh aktor, dan informasi yang diinginkan aktor dari sistem.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8032-9173-f23f57ae1e70"
+          class="numbered-list"
+          start="4"
+        >
+          <li>
+            <strong>Diagram</strong>
+            <ul id="11cd585f-a525-8042-8e96-e3e6323a703d" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Use-Case Diagram:</strong
+                > Menggambarkan aktor dan interaksi dengan sistem.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80fa-8d83-e80fc0f791b3" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Activity Diagram:</strong
+                > Menggambarkan alur aktivitas dalam sistem.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-808b-9b55-f4c3b0de5ed2" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Swimlane Diagrams:</strong
+                > Mengelompokkan aktivitas berdasarkan peran atau aktor.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8028-ad8e-e90da5f10782"
+          class="numbered-list"
+          start="5"
+        >
+          <li>
+            <strong>Objek Data</strong>
+            <ul id="11cd585f-a525-809d-b1f4-deeb46eb2c4c" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Definisi:</strong
+                > Representasi dari informasi komposit yang memiliki berbagai properti atau atribut.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8066-9a5e-c9dd829ab289" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Contoh:</strong
+                > Entitas eksternal, sesuatu, kejadian, peristiwa, peran, unit organisasi, tempat, atau struktur.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80ff-b744-cb6c28f20fcc"
+          class="numbered-list"
+          start="6"
+        >
+          <li>
+            <strong>Hubungan (Relationships)</strong>
+            <ul id="11cd585f-a525-8037-b692-d13aea2bc689" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Definisi:</strong
+                > Objek data terhubung dengan cara yang berbeda (misalnya, seorang memiliki mobil).
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80fe-8623-ffe8e509b64e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>ERD Notation:</strong
+                > Menggambarkan hubungan antara objek data.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8067-8f9d-f5a8e75d5b8e"
+          class="numbered-list"
+          start="7"
+        >
+          <li>
+            <strong>Pemodelan Berbasis Kelas</strong>
+            <ul id="11cd585f-a525-80d7-9c59-c5df9086def2" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Elemen:</strong
+                > Classes, objects, attributes, operations, CRC models, collaboration diagrams, packages.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8015-9dd7-f4c11ccdc01b" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Identifikasi Kelas Analisis:</strong
+                > Menganalisis skenario penggunaan dan menentukan kelas dengan menandai kata benda atau frasa benda.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8020-aed5-fb95aa1f6882" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Manifestasi Kelas Analisis:</strong
+                > Entitas eksternal, hal-hal, kejadian, peran, unit organisasi, tempat, struktur.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8054-a43c-d771da92d989"
+          class="numbered-list"
+          start="8"
+        >
+          <li>
+            <strong>Defining Attributes and Operations</strong>
+            <ul id="11cd585f-a525-80c8-8bcf-f0b76778625c" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Attributes:</strong
+                > Menjelaskan kelas yang dipilih untuk model analisis.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80c8-b0c1-edb1b84a0079" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Operations:</strong
+                > Manipulasi data, perhitungan, pemeriksaan status, pemantauan kejadian pengendali.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-803c-8e3f-caaa7d43c881"
+          class="numbered-list"
+          start="9"
+        >
+          <li>
+            <strong>CRC Modeling</strong>
+            <ul id="11cd585f-a525-805c-b7c0-c82736b370dc" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Deskripsi:</strong
+                > Kumpulan kartu indeks standar yang mewakili kelas (nama kelas di bagian atas, tanggung jawab di kiri, kolaborator di kanan).
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80fc-b833-ecc5bfa7a391"
+          class="numbered-list"
+          start="10"
+        >
+          <li>
+            <strong>Class Types</strong>
+            <ul id="11cd585f-a525-8009-90fe-f6823238de73" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Entity Classes:</strong
+                > Diambil langsung dari pernyataan masalah (misalnya, FloorPlan).
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80fe-ac78-cb9ee3e01e03" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Boundary Classes:</strong
+                > Membuat antarmuka yang dilihat dan digunakan oleh pengguna.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-802c-80b6-c5773fe335a2" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Controller Classes:</strong
+                > Mengelola unit kerja dari awal hingga akhir.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-800e-9c93-ce16e9fafa69"
+          class="numbered-list"
+          start="11"
+        >
+          <li>
+            <strong>Responsibilities</strong>
+            <ul id="11cd585f-a525-80eb-970b-cb8f16f9f404" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Distribusi kecerdasan sistem di seluruh kelas.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8035-83d0-ffed1d6b4cd9" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Setiap tanggung jawab dinyatakan secara umum.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8015-a39c-fef1cb99198e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Informasi dan perilaku terkaitnya berada dalam kelas yang sama.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8030-9d37-c9260786848f" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Informasi tentang satu hal ditempatkan pada satu kelas.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-805f-9fcb-c58173f5ae71" class="bulleted-list">
+              <li style="list-style-type: disc">
+                Tanggung jawab dibagi di antara kelas terkait.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <hr id="11cd585f-a525-8015-bc92-c484c5230ab4" />
+        <h3 id="11cd585f-a525-8048-b92b-c728199789a0" class="">
+          <strong>PPT 7: Kebutuhan Lanjutan</strong>
+        </h3>
+        <ol
+          type="1"
+          id="11cd585f-a525-8035-b45a-dde7d7398efe"
+          class="numbered-list"
+          start="1"
+        >
+          <li>
+            <strong>Collaborations</strong>
+            <ul id="11cd585f-a525-80da-92e3-d6486f818c1c" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Cara:</strong
+                > Kelas dapat menggunakan operasi sendiri atau berkolaborasi dengan kelas lain untuk memenuhi tanggung jawabnya.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80fd-99a4-d3a41c21dccf" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Jenis Hubungan:</strong>
+                <ul
+                  id="11cd585f-a525-806d-9793-fcd4924bfb13"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>is-part-of relationship</strong>
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-8010-b527-eaf4e20bcb50"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>has-knowledge-of relationship</strong>
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-805e-9697-fcf37ca17369"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>depends-upon relationship</strong>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-809d-8dc7-e5b4f33c6ff7"
+          class="numbered-list"
+          start="2"
+        >
+          <li>
+            <strong>Composite Aggregate Class</strong>
+            <ul id="11cd585f-a525-8028-9cd7-ebf7f01df824" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Contoh:</strong
+                > Kelas Player terdiri dari PlayerHead, PlayerBody, PlayerArms, PlayerLegs.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8030-9824-d70535ffbcd9"
+          class="numbered-list"
+          start="3"
+        >
+          <li>
+            <strong>Asosiasi dan Ketergantungan</strong>
+            <ul id="11cd585f-a525-807c-921c-f115d00ccc7d" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Meninjau Model CRC:</strong
+                > Semua peserta diberi subset kartu indeks model CRC (Class Responsibility Collaborator).
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8059-ae7e-ea82bb785715"
+          class="numbered-list"
+          start="4"
+        >
+          <li>
+            <strong
+              >Requirements Modeling: Flow, Behavior, Patterns, and WebApps</strong
+            >
+            <ul id="11cd585f-a525-8007-ae21-cb38d80fc699" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Flow-Oriented Modeling</strong>
+                <ul
+                  id="11cd585f-a525-80e4-b60a-ce003d580aa5"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>Flow Model:</strong
+                    > Sistem berbasis komputer sebagai transformasi informasi.
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-80c1-8497-c72559ce0e4b"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>Flow Modeling Notation:</strong>
+                    <ul
+                      id="11cd585f-a525-80aa-927f-eaae65cbd68d"
+                      class="bulleted-list"
+                    >
+                      <li style="list-style-type: square">
+                        <strong>External Entity:</strong
+                        > Produsen atau konsumen data (misal: orang, perangkat).
+                      </li>
+                    </ul>
+                    <ul
+                      id="11cd585f-a525-808d-8b3d-e5e735940e09"
+                      class="bulleted-list"
+                    >
+                      <li style="list-style-type: square">
+                        <strong>Process:</strong
+                        > Pengubah data (misal: compute taxes, format report).
+                      </li>
+                    </ul>
+                    <ul
+                      id="11cd585f-a525-8084-9a29-caf222cd8f1d"
+                      class="bulleted-list"
+                    >
+                      <li style="list-style-type: square">
+                        <strong>Data Flow:</strong> Aliran data.
+                      </li>
+                    </ul>
+                    <ul
+                      id="11cd585f-a525-80bd-80a7-cc103bfe3dac"
+                      class="bulleted-list"
+                    >
+                      <li style="list-style-type: square">
+                        <strong>Data Stores:</strong
+                        > Data disimpan untuk digunakan nanti.
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-800a-a5ae-cca048e39fcd"
+          class="numbered-list"
+          start="5"
+        >
+          <li>
+            <strong>Membangun DFD (Data Flow Diagram)</strong>
+            <ul id="11cd585f-a525-8055-98fc-f5665593c3d0" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Level 0 DFD Example</strong>
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8030-ad94-c85425b68f1c" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Level 1 DFD Example</strong>
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8027-80f4-e799b2792b40" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>The Data Flow Hierarchy</strong>
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80da-a651-c3ac1318a48e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Process Specification (PSPEC):</strong
+                > Bubble, narrative, pseudocode (PDL), equations, tables, diagrams, and/or charts.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-806a-bd62-ebc77772e362"
+          class="numbered-list"
+          start="6"
+        >
+          <li>
+            <strong>Pemodelan Aliran Kontrol</strong>
+            <ul id="11cd585f-a525-8034-8ec9-c7641ebacbfa" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Control Specification (CSPEC)</strong>
+                <ul
+                  id="11cd585f-a525-8063-aac2-ce6174951391"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>State Diagram</strong>
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-80c3-a6b5-faadb3faea37"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>State Transition Table</strong>
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-8038-a515-d60c9a2b1729"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>Decision Tables</strong>
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-80d6-9d3e-c47bc9362380"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>Activation Tables</strong>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8009-9461-e692d02f059a"
+          class="numbered-list"
+          start="7"
+        >
+          <li>
+            <strong>Pemodelan Perilaku</strong>
+            <ul id="11cd585f-a525-800a-bd6a-e2cabb8c0731" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>State Representations:</strong
+                > Diagram status untuk kelas ControlPanel.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-800b-9e3a-ffa519cc3915" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Sequence Diagram:</strong
+                > Menggambarkan urutan interaksi.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80d0-83de-d94d6efaeb87"
+          class="numbered-list"
+          start="8"
+        >
+          <li>
+            <strong>Patterns for Requirements Modeling</strong>
+            <ul id="11cd585f-a525-808a-b8eb-ccce52d26872" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong
+                  >Menemukan Pola Analisis (SAP - Semantic Analysis Pattern)</strong
+                >
+                <ul
+                  id="11cd585f-a525-8098-83cd-df6371176749"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    <strong>Contoh:</strong
+                    > Use case “Monitor reverse motion” untuk perangkat lunak kontrol dan monitor sensor jarak mobil.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80e0-a233-ce1c6bd693e1"
+          class="numbered-list"
+          start="9"
+        >
+          <li>
+            <strong>Actuator-Sensor Pattern</strong>
+            <ul id="11cd585f-a525-80a8-b5cc-e623cb4a43c3" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Maksud:</strong
+                > Menentukan berbagai jenis sensor dan aktuator dalam sistem tertanam.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8089-8852-ce1f07fe61d3" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Motivasi:</strong
+                > Menyusun sensor dan aktuator ke dalam pola untuk menentukan atribut dan operasinya.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80da-b87c-c175c693d57e" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Batasan:</strong
+                > Setiap sensor/aktuator harus memiliki metode untuk membaca atau mengirim nilai dan memeriksa status operasi.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80ed-955d-f3634f1e4e5a"
+          class="numbered-list"
+          start="10"
+        >
+          <li>
+            <strong>Requirements Modeling for WebApps</strong>
+            <ul id="11cd585f-a525-80ea-8838-e5363f72a2aa" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Content Analysis</strong>
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80df-8752-d4f3778a1996" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Interaction Analysis</strong>
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-8005-b8da-e6290af995c1" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Functional Analysis</strong>
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80a7-b025-d02ae98afb0b" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Configuration Analysis</strong>
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8012-a666-e5f9ca4ed489"
+          class="numbered-list"
+          start="11"
+        >
+          <li>
+            <strong>The Content Model</strong>
+            <ul id="11cd585f-a525-80c9-9feb-fc0ebc243352" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Ekstraksi:</strong> Objek konten dari use-cases.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-80f8-972a-d25a0758f889" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Atribut:</strong
+                > Identifikasi atribut dari setiap objek konten.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-803a-a457-c676ad2b3052" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Hubungan dan Hierarki:</strong
+                > Diagram entitas-relasi atau UML, pohon data.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-80dc-8e01-f285c0b77b56"
+          class="numbered-list"
+          start="12"
+        >
+          <li>
+            <strong>The Interaction Model</strong>
+            <ul id="11cd585f-a525-8039-a7b0-edfff331a9e9" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Elemen:</strong
+                > Use-cases, sequence diagrams, state diagrams, user interface prototype.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-800f-a087-ff57bd9f79e1"
+          class="numbered-list"
+          start="13"
+        >
+          <li>
+            <strong>The Configuration Model</strong>
+            <ul id="11cd585f-a525-80e4-8a7a-c9930e61da85" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Server-side:</strong
+                > Hardware dan lingkungan sistem operasi.
+              </li>
+            </ul>
+            <ul id="11cd585f-a525-802e-9794-f7962594f1ef" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Client-side:</strong
+                > Konfigurasi browser dan kebutuhan pengujian.
+              </li>
+            </ul>
+          </li>
+        </ol>
+        <ol
+          type="1"
+          id="11cd585f-a525-8054-a5ca-db271f6087a4"
+          class="numbered-list"
+          start="14"
+        >
+          <li>
+            <strong>Pemodelan Navigasi</strong>
+            <ul id="11cd585f-a525-807c-ac41-f1bd4ac4765d" class="bulleted-list">
+              <li style="list-style-type: disc">
+                <strong>Pertanyaan Kunci:</strong>
+                <ul
+                  id="11cd585f-a525-8043-ae58-f41c9dd8fde0"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    Apakah elemen tertentu lebih mudah dijangkau?
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-809e-a114-fd91518497aa"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    Bagaimana seharusnya kesalahan navigasi ditangani?
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-80d8-a345-d4ce610f8d36"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    Haruskah navigasi dilakukan melalui tautan atau cara lain?
+                  </li>
+                </ul>
+                <ul
+                  id="11cd585f-a525-8013-a20a-da209f058270"
+                  class="bulleted-list"
+                >
+                  <li style="list-style-type: circle">
+                    Haruskah log navigasi disimpan untuk pengguna?
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </article>
+    <span class="sans" style="font-size: 14px; padding-top: 2em"></span>
+  </body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+</html>
